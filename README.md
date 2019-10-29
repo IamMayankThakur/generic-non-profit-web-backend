@@ -16,10 +16,16 @@
 * Once committed, create a pull request against the `staging` branch.
 
 ### Initilizing the project
-* Install mongodb 3.6 `sudo apt-get install mongodb`
+* Install postgresql 11 `sudo apt-get install postgresql`
 * Install redis-server `sudo apt-get install redis-server`
 * Create python3 virtualenv using `python3 -m venv venv`
+* `sudo passwd postgres`
+* Inside postgres shell `ALTER USER postgres PASSWORD 'postgres';`
 
 ### Running the project
 
-* 
+* `source venv/bin/activate`
+* `cd npo_backend`
+* `python manage.py makemigrations`
+* `python manage.py migrate`
+* `python manage.py runserver`
