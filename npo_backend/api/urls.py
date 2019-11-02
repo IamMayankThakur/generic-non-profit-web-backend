@@ -6,6 +6,7 @@ app_name = 'api'
 
 urlpatterns = [
     path('hello/', views.HelloView.as_view(), name='hello'),
+    path('update_details/',views.UpdateDetailsView.as_view(),name = 'update'),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)
