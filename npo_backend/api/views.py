@@ -5,8 +5,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework import parsers
 from rest_framework import status 
 from django.contrib.auth.models import User
-from api.models import UserProfile
-from api.serializers import UserProfileSerializer
+from api.models import UserProfile,Event,Expense,Donation,FormMetaData,FormResponse
+from api.serializers import UserProfileSerializer,EventSerializer
 import json
 
 
@@ -47,5 +47,13 @@ class UpdateDetailsView(APIView):
             print(type(e))
             return Response(data = {'message': 'Update failed'},status = 400)
 
+class EventView(APIView):
+    permission_classes = (IsAuthenticated,)
+    parser_classes = (parsers.JSONParser,)
+    def post(self,request):
+        data = request.data
+        new_event = Event.objects.create(data)
+        new_event.save()
+        serializer = EventSerializer(new_event)
 
-
+    
