@@ -1,3 +1,4 @@
+from rest_framework.generics import UpdateAPIView
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
@@ -29,11 +30,14 @@ class UpdateDetailsView(APIView):
             data = request.data
             print(data)
             print('*****')
-            serializer = UserProfileSerializer(request.user.userprofile)
-            serializer.update(request.data)
-            if serializer.is_valid():
-                serializer.save() 
+            for key,value in data.items():
+                setattr(user_profile,key,value)
+            #serializer = UserProfileSerializer(request.user.userprofile)
+            #serializer.update(request.data)
+            #if serializer.is_valid():
+            #    serializer.save() 
             #user_profile.save()
+            user_profile.save()
             print('New credentials are:')
             print(user_profile.__dict__)
             return Response(status = status.HTTP_200_OK, data = {'message' : 'Updated'})
