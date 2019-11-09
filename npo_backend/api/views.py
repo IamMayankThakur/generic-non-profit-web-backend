@@ -1,14 +1,13 @@
-from rest_framework.generics import UpdateAPIView
+from rest_framework.generics import UpdateAPIView,RetrieveUpdateDestroyAPIView,ListAPIView
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import parsers
 from rest_framework import status 
+from rest_framework import viewsets
 from django.contrib.auth.models import User
-from api.models import UserProfile,Event,Expense,Donation,FormMetaData,FormResponse
-from api.serializers import UserProfileSerializer,EventSerializer
-import json
-
+from .models import UserProfile,Event,Expense,Donation,FormMetaData,FormResponse
+from .serializers import UserProfileSerializer,EventSerializer,DonationSerializer
 
 class HelloView(APIView):
     #permission_classes = (IsAuthenticated,)
@@ -16,6 +15,7 @@ class HelloView(APIView):
     def get(self, request):
         content = {'message': 'Hello, World!'}
         return Response(content)
+
 
 
 class UpdateDetailsView(APIView):
@@ -32,11 +32,6 @@ class UpdateDetailsView(APIView):
             print('*****')
             for key,value in data.items():
                 setattr(user_profile,key,value)
-            #serializer = UserProfileSerializer(request.user.userprofile)
-            #serializer.update(request.data)
-            #if serializer.is_valid():
-            #    serializer.save() 
-            #user_profile.save()
             user_profile.save()
             print('New credentials are:')
             print(user_profile.__dict__)
@@ -47,6 +42,16 @@ class UpdateDetailsView(APIView):
             print(type(e))
             return Response(data = {'message': 'Update failed'},status = 400)
 
+#To put account id based operations together
+'''
+class EventViewSet(viewsets.ModelViewSet):
+    queryset = Event.objects.all()
+    serializer_class = EventSerializer
+    permission_classes = (IsAuthenticated,)
+'''
+ 
+
+'''
 class EventView(APIView):
     permission_classes = (IsAuthenticated,)
     parser_classes = (parsers.JSONParser,)
@@ -55,5 +60,39 @@ class EventView(APIView):
         new_event = Event.objects.create(data)
         new_event.save()
         serializer = EventSerializer(new_event)
+''' 
 
-    
+#using PATCH instead of POST for updating an existing record
+class EventView(RetrieveUpdateDestroyAPIView):
+    permission_classes = (IsAuthenticated,)
+    parser_classes = (parsers.JSONParser,)
+    queryset = Event.objects.all()
+    serializer_class = EventSerializer
+
+
+class EventDateView(ListAPIView):
+
+    def get_queryset(self):
+        start_date = self.request.query_params.get('startDate')
+        print(type(start_date))
+        print(f'Starting date is: {start_date}')
+        end_date = self.request.query_params.get('endDate')
+        queryset = Event.objects.filter(event_begin_date__gte = start_date).filter(event_end_date__lte = end_date)
+        #queryset = Event.objects.filter(event_begin_date__gte = start_date)
+        return queryset
+
+    permission_classes = (IsAuthenticated,)
+    parser_classes = (parsers.JSONParser,)
+    serializer_class = EventSerializer
+
+
+class DonationDateView(ListAPIView):
+    def get_queryset(self):
+        intial_date = self.request.query_params.get('startDate')
+        final_date = self.request.query_params.get('endDate')
+        queryset = Donation.objects.filter(donated_on__range = [intial_date,final_date])
+        return queryset
+
+    permission_classes = (IsAuthenticated,)
+    parser_classes = (parsers.JSONParser,)
+    serializer_class = DonationSerializer

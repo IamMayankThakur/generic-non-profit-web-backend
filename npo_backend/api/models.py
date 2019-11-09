@@ -27,6 +27,9 @@ class Event(models.Model):
     event_created_by = models.ForeignKey(User, on_delete=models.CASCADE)
     trash = models.BooleanField(default=False)
 
+    def __str__(self):
+        return super().__str__() + str(self.name)
+
 
 class Donation(models.Model):
     donor = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -35,6 +38,8 @@ class Donation(models.Model):
     event = models.ForeignKey(Event, on_delete=models.CASCADE, blank=True)
     donated_on = models.DateTimeField(default=timezone.now)
 
+    def __str__(self):
+        return f'Donation by {self.donor} of {self.amount} ' + super().__str__() 
 
 class FormMetaData(models.Model):
     form_name = models.CharField(
