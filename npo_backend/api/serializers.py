@@ -1,5 +1,5 @@
 from rest_framework import serializers 
-from .models import UserProfile,Event,Donation
+from .models import UserProfile,Event,Donation,Expense
 
 class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
@@ -18,3 +18,8 @@ class DonationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Donation
         fields = ('donor','amount','remark','event','donated_on')
+
+class ExpenseSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Expense
+        fields = '__all__'

@@ -7,7 +7,7 @@ from rest_framework import status
 from rest_framework import viewsets
 from django.contrib.auth.models import User
 from .models import UserProfile,Event,Expense,Donation,FormMetaData,FormResponse
-from .serializers import UserProfileSerializer,EventSerializer,DonationSerializer
+from .serializers import UserProfileSerializer,EventSerializer,DonationSerializer,ExpenseSerializer
 
 class HelloView(APIView):
     #permission_classes = (IsAuthenticated,)
@@ -51,17 +51,6 @@ class EventViewSet(viewsets.ModelViewSet):
 '''
  
 
-'''
-class EventView(APIView):
-    permission_classes = (IsAuthenticated,)
-    parser_classes = (parsers.JSONParser,)
-    def post(self,request):
-        data = request.data
-        new_event = Event.objects.create(data)
-        new_event.save()
-        serializer = EventSerializer(new_event)
-''' 
-
 #using PATCH instead of POST for updating an existing record
 class EventView(RetrieveUpdateDestroyAPIView):
     permission_classes = (IsAuthenticated,)
@@ -69,6 +58,12 @@ class EventView(RetrieveUpdateDestroyAPIView):
     queryset = Event.objects.all()
     serializer_class = EventSerializer
 
+
+class ExpenseView(RetrieveUpdateDestroyAPIView):
+    permission_classes = (IsAuthenticated,)
+    parser_classes = (parsers.JSONParser,)
+    queryset = Expense.objects.all()
+    serializer_class = ExpenseSerializer
 
 class EventDateView(ListAPIView):
 
@@ -96,3 +91,14 @@ class DonationDateView(ListAPIView):
     permission_classes = (IsAuthenticated,)
     parser_classes = (parsers.JSONParser,)
     serializer_class = DonationSerializer
+
+class ExpenseDateView(ListAPIView):
+    def get_queryset(self):
+        intial_date = self.request.query_params.get('startDate')
+        final_date = self.request.query_params.get('endDate')
+        queryset = Expense.objects.filter(timestamp__range = [intial_date,final_date])
+        return queryset
+
+    permission_classes = (IsAuthenticated,)
+    parser_classes = (parsers.JSONParser,)
+    serializer_class = ExpenseSerializer
