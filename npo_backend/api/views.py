@@ -16,8 +16,6 @@ class HelloView(APIView):
         content = {'message': 'Hello, World!'}
         return Response(content)
 
-
-
 class UpdateDetailsView(APIView):
 
     permission_classes = (IsAuthenticated,)
@@ -102,3 +100,14 @@ class ExpenseDateView(ListAPIView):
     permission_classes = (IsAuthenticated,)
     parser_classes = (parsers.JSONParser,)
     serializer_class = ExpenseSerializer
+
+class UserDateView(ListAPIView):
+    def get_queryset(self):
+        intial_date = self.request.query_params.get('startDate')
+        final_date = self.request.query_params.get('endDate')
+        queryset = UserProfile.objects.filter(dob__range = [intial_date,final_date])
+        return queryset
+
+    permission_classes = (IsAuthenticated,)
+    parser_classes = (parsers.JSONParser,)
+    serializer_class = UserProfileSerializer
