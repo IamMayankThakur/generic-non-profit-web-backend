@@ -5,7 +5,8 @@ from . import views
 app_name = 'api'
 
 urlpatterns = [
-    path('hello/', views.HelloView.as_view(), name='hello'),
+    # path('hello/', views.HelloView.as_view(), name='hello'),
+    path('signup/', views.SignUpView.as_view(), name='sign up'),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)

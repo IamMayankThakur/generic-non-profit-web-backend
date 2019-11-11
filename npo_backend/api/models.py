@@ -8,7 +8,7 @@ from django.contrib.postgres.fields import JSONField
 class UserProfile(models.Model):
     # Other attributes are in the default User model
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    dob = models.DateField()
+    dob = models.DateField(blank=True, null=True)
     gender = models.CharField(max_length=255, choices=[(
         gender, gender.value) for gender in Gender], blank=True, null=True)
     designation = models.CharField(max_length=255, blank=True, null=True)
