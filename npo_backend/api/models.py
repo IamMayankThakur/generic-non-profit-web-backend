@@ -26,6 +26,7 @@ class Event(models.Model):
     event_end_date = models.DateField(blank=True, null=True)
     event_created_by = models.ForeignKey(User, on_delete=models.CASCADE)
     trash = models.BooleanField(default=False)
+    users_registered = models.ManyToManyField(User)
 
 
 class Donation(models.Model):
