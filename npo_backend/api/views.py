@@ -8,14 +8,13 @@ from rest_framework import status
 from rest_framework import viewsets
 from django.contrib.auth.models import User
 from .models import UserProfile,Event,Expense,Donation,FormMetaData,FormResponse
-from .serializers import UserProfileSerializer,EventSerializer,DonationSerializer,ExpenseSerializer
+from .serializers import UserProfileSerializer,EventSerializer,DonationSerializer,ExpenseSerializer,UserSerializer
 
 class HelloView(APIView):
-    #permission_classes = (IsAuthenticated,)
-
-#     def get(self, request):
-#         content = {'message': 'Hello, World!'}
-#         return Response(content)
+    permission_classes = (IsAuthenticated,)
+    def get(self, request):
+        content = {'message': 'Hello, World!'}
+        return Response(content)
 
 
 class SignUpView(APIView):
@@ -33,6 +32,7 @@ class SignUpView(APIView):
         except Exception as e:
             return Response(data={'message': 'User creation failed'}, status=status.HTTP_400_BAD_REQUEST)
         return Response(data={'message': 'User Created'}, status=status.HTTP_201_CREATED)
+
 class UpdateDetailsView(APIView):
 
     permission_classes = (IsAuthenticated,)
@@ -128,3 +128,13 @@ class UserDateView(ListAPIView):
     permission_classes = (IsAuthenticated,)
     parser_classes = (parsers.JSONParser,)
     serializer_class = UserProfileSerializer
+
+class RegisteredForEventView(ListAPIView):
+    def get_queryset(self):
+        event_id = self.request.query_params.get('eventId')
+        queryset = User.objects.filter(events_registered_for__pk = event_id)
+        return queryset
+
+    permission_classes = (IsAuthenticated,)
+    parser_classes = (parsers.JSONParser,)
+    serializer_class = UserSerializer

@@ -27,9 +27,9 @@ class Event(models.Model):
     created_on = models.DateTimeField(default=timezone.now)
     event_begin_date = models.DateField(blank=True, null=True)
     event_end_date = models.DateField(blank=True, null=True)
-    event_created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='event_created_by')
+    event_created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='events_created')
     trash = models.BooleanField(default=False)
-    users_registered = models.ManyToManyField(User, related_name='users_registered')
+    users_registered = models.ManyToManyField(User, related_name='events_registered_for')
 
     def __str__(self):
         return super().__str__() + str(self.name)
