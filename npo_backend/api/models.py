@@ -17,6 +17,9 @@ class UserProfile(models.Model):
     pan_no = models.TextField(blank=True, null=True)
     aadhar_no = models.TextField(blank=True, null=True)
 
+    def __str__(self):
+        return super().__str__() + f': {self.user.username}'
+
 
 class Event(models.Model):
     name = models.CharField(max_length=255, blank=False)
@@ -28,6 +31,9 @@ class Event(models.Model):
     trash = models.BooleanField(default=False)
     users_registered = models.ManyToManyField(User, related_name='users_registered')
 
+    def __str__(self):
+        return super().__str__() + str(self.name)
+
 
 class Donation(models.Model):
     donor = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -36,6 +42,8 @@ class Donation(models.Model):
     event = models.ForeignKey(Event, on_delete=models.CASCADE, blank=True)
     donated_on = models.DateTimeField(default=timezone.now)
 
+    def __str__(self):
+        return f'Donation by {self.donor} of {self.amount} ' + super().__str__() 
 
 class FormMetaData(models.Model):
     form_name = models.CharField(
