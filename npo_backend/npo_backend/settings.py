@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'api.apps.ApiConfig',
     'django_rest_passwordreset',
+    # 'paypal.standard.ipn',
 ]
 
 MIDDLEWARE = [
@@ -143,3 +144,11 @@ REST_FRAMEWORK = {
         # 'rest_framework.authentication.SessionAuthentication',
     ),
 }
+
+# PAYPAL_TEST = True
+
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER  = 'noreplybigdata@gmail.com'
+EMAIL_HOST_PASSWORD = 'bigdata2019'
+EMAIL_PORT = 465
+EMAIL_USE_SSL = True

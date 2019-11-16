@@ -24,9 +24,9 @@ class Event(models.Model):
     created_on = models.DateTimeField(default=timezone.now)
     event_begin_date = models.DateField(blank=True, null=True)
     event_end_date = models.DateField(blank=True, null=True)
-    event_created_by = models.ForeignKey(User, on_delete=models.CASCADE)
+    event_created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='event_created_by')
     trash = models.BooleanField(default=False)
-    users_registered = models.ManyToManyField(User)
+    users_registered = models.ManyToManyField(User, related_name='users_registered')
 
 
 class Donation(models.Model):
@@ -59,3 +59,7 @@ class Expense(models.Model):
     amount = models.FloatField()
     timestamp = models.DateTimeField(default=timezone.now)
     updated_by = models.ForeignKey(User, on_delete=models.CASCADE)
+
+class MailingList(models.Model):
+    email_id = models.EmailField(blank=False)
+    time_added = models.DateTimeField(default=timezone.now)
