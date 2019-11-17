@@ -15,6 +15,7 @@ urlpatterns = [
     path('get_events/',views.EventDateView.as_view(),name = 'events_by_date'),
     path('get_donations/',views.DonationDateView.as_view(),name = 'donations_by_date'),
     path('get_users/', views.UserDateView.as_view(), name = 'users_by_date'),
+    path('get_registered_users/',views.RegisteredForEventView.as_view(),name = 'registered_users'),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)
