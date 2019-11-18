@@ -4,11 +4,12 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import parsers
+from rest_framework import renderers
 from rest_framework import status 
 from rest_framework import viewsets
 from django.contrib.auth.models import User
 from .models import UserProfile,Event,Expense,Donation,FormMetaData,FormResponse,FormMetaData
-from .serializers import UserProfileSerializer,EventSerializer,DonationSerializer,ExpenseSerializer,UserSerializer,FormMetaDataSerializer,FormResponseSerializer
+from .serializers import UserProfileSerializer,EventSerializer,DonationSerializer,ExpenseSerializer,UserSerializer,FormMetaDataSerializer,FormResponseSerializer,AdminUserSerializer
 
 class HelloView(APIView):
     permission_classes = (IsAuthenticated,)
@@ -163,3 +164,50 @@ class FormDetailsView(ListAPIView):
     parser_classes = (parsers.JSONParser,)
     serializer_class = FormResponseSerializer
 
+#Gets all expense records for last 20 days. No. 8 from the New Apis list
+class GenericExpenseView(ListAPIView):
+    def get_queryset(self):
+        queryset = Expense.objects.filter(timestamp__date__gte = datetime.date.today() - datetime.timedelta(days = 20))
+        return queryset
+
+    permission_classes = (IsAuthenticated,)
+    parser_classes = (parsers.JSONParser,)
+    serializer_class = ExpenseSerializer
+
+class AdminUserDetailsView(ListAPIView):
+    def get_queryset(self):
+        users = User.objects.filter(is_superuser = True)
+        return users
+
+    permission_classes = (IsAuthenticated,)
+    parser_classes = (parsers.JSONParser,)
+    serializer_class = AdminUserSerializer
+
+class UsersFromPastWeekView(APIView):
+    
+    permission_classes = (IsAuthenticated,)
+    parser_classes = (parsers.JSONParser,)
+    renderer_classes = (renderers.JSONRenderer,)
+    
+    def get(self,request):
+        users = User.objects.filter(date_joined__date__gte = datetime.date.today() - datetime.timedelta(days = 7))
+        users_count = len(users)
+        content = {'count' : users_count}
+        return Response(content)
+
+class CreditDebitCurrentMonthView(APIView):
+    
+    permission_classes = (IsAuthenticated,)
+    parser_classes = (parsers.JSONParser,)
+    renderer_classes = (renderers.JSONRenderer,)
+    
+    def get(self,request):
+        expense_records = Expense.objects.filter(timestamp__date__gte = datetime.date.today() - datetime.timedelta(days = 30))
+        credit_amount,debit_amount = 0,0
+        for record in expense_records:
+            if record.credit:
+                credit_amount += record.amount
+            else:
+                debit_amount += record.amount
+        content = ('credit' : credit_amount, 'debit' : debit_amount)
+        return Reponse(content)
