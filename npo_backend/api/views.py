@@ -2,16 +2,21 @@ from .serializers import UserProfileSerializer, EventSerializer, DonationSeriali
 import datetime as datetime
 from .serializers import UserProfileSerializer, EventSerializer, DonationSerializer, ExpenseSerializer
 from .models import UserProfile, Event, Expense, Donation, FormMetaData, FormResponse
-from rest_framework.generics import UpdateAPIView, RetrieveUpdateDestroyAPIView, ListAPIView
+from rest_framework.generics import UpdateAPIView, RetrieveUpdateDestroyAPIView, ListAPIView, CreateAPIView, ListCreateAPIView
 from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from django.utils import timezone
 from rest_framework import parsers
+from rest_framework import renderers
 from rest_framework import status
 from rest_framework import viewsets
 from django.contrib.auth.models import User
+from .models import UserProfile, Event, Expense, Donation, FormMetaData, FormResponse, FormMetaData
+from .serializers import UserProfileSerializer, EventSerializer, DonationSerializer, ExpenseSerializer, UserSerializer, FormMetaDataSerializer, FormResponseSerializer, AdminUserSerializer
+
+import datetime
 
 
 def get(self, request):
@@ -80,6 +85,7 @@ class EventView(RetrieveUpdateDestroyAPIView):
 
 
 class ExpenseView(RetrieveUpdateDestroyAPIView):
+
     permission_classes = (IsAuthenticated,)
     parser_classes = (parsers.JSONParser,)
     queryset = Expense.objects.all()
@@ -223,3 +229,84 @@ class RegisteredForEventView(ListAPIView):
     permission_classes = (IsAuthenticated,)
     parser_classes = (parsers.JSONParser,)
     serializer_class = UserSerializer
+
+
+class FillFormView(ListCreateAPIView):
+
+    queryset = FormResponse.objects.all()
+    permission_classes = (IsAuthenticated,)
+    parser_classes = (parsers.JSONParser,)
+    serializer_class = FormResponseSerializer
+
+
+class FormView(APIView):
+    pass
+
+
+class FormDetailsView(ListAPIView):
+    def get_queryset(self):
+        form_id = self.request.query_params.get('formId')
+        user_id = self.request.query_params.get('userId')
+        forms = FormResponse.objects.filter(form_id=form_id)
+        queryset = forms.objects.filter(filled_by__id=user_id)
+        return queryset
+
+    permission_classes = (IsAuthenticated,)
+    parser_classes = (parsers.JSONParser,)
+    serializer_class = FormResponseSerializer
+
+# Gets all expense records for last 20 days. No. 8 from the New Apis list
+
+
+class GenericExpenseView(ListAPIView):
+    def get_queryset(self):
+        queryset = Expense.objects.filter(
+            timestamp__date__gte=datetime.date.today() - datetime.timedelta(days=20))
+        return queryset
+
+    permission_classes = (IsAuthenticated,)
+    parser_classes = (parsers.JSONParser,)
+    serializer_class = ExpenseSerializer
+
+
+class AdminUserDetailsView(ListAPIView):
+    def get_queryset(self):
+        users = User.objects.filter(is_superuser=True)
+        return users
+
+    permission_classes = (IsAuthenticated,)
+    parser_classes = (parsers.JSONParser,)
+    serializer_class = AdminUserSerializer
+
+
+class UsersFromPastWeekView(APIView):
+
+    permission_classes = (IsAuthenticated,)
+    parser_classes = (parsers.JSONParser,)
+    renderer_classes = (renderers.JSONRenderer,)
+
+    def get(self, request):
+        users = User.objects.filter(
+            date_joined__date__gte=datetime.date.today() - datetime.timedelta(days=7))
+        users_count = len(users)
+        content = {'count': users_count}
+        return Response(content)
+
+
+class CreditDebitCurrentMonthView(APIView):
+
+    permission_classes = (IsAuthenticated,)
+    parser_classes = (parsers.JSONParser,)
+    renderer_classes = (renderers.JSONRenderer,)
+
+    def get(self, request):
+        expense_records = Expense.objects.filter(
+            timestamp__date__gte=datetime.date.today() - datetime.timedelta(days=30))
+        credit_amount, debit_amount = 0, 0
+        for record in expense_records:
+            if record.credit:
+                credit_amount += record.amount
+            else:
+                debit_amount += record.amount
+        content = {'credit': credit_amount, 'debit': debit_amount}
+        return Response(content)
