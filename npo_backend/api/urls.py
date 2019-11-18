@@ -18,6 +18,8 @@ urlpatterns = [
     path('donations_count/', views.DonationCountView.as_view(), name = 'count donation by date'),
     path('users_count/', views.UserCountView.as_view(), name = 'count user by date'),
     path('get_donations_value/', views.DonationView.as_view(), name = 'Donations for past 30 days'),
+    path('upcoming_events_count/', views.UpcomingEventCountView.as_view(), name = 'Upcoming Events'),
+    path('events_count/', views.EventCountView.as_view(), name = 'Past Events'),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)

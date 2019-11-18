@@ -3,6 +3,7 @@ from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
+from django.utils import timezone
 from rest_framework import parsers
 from rest_framework import status
 from rest_framework import viewsets
@@ -179,5 +180,37 @@ class DonationView(APIView):
 
     def get(self, request):
         date = datetime.datetime.today() - datetime.timedelta(days=30)
-        donations = list(Donation.objects.filter(donated_on__gte=date).values('donated_on', 'amount'))  
+        donations = list(Donation.objects.filter(
+            donated_on__gte=date).values('donated_on', 'amount'))
         return Response(data=donations, status=status.HTTP_200_OK)
+
+
+class EventCountView(APIView):
+    permission_classes = (IsAdminUser,)
+
+    def get(self, request):
+        days = request.query_params['days']
+        if int(days) == 0:
+            count = Event.objects.all().count()
+            return Response(data={'count': count}, status=status.HTTP_200_OK)
+
+        date = datetime.datetime.today() - datetime.timedelta(days=int(days))
+        count = Event.objects.filter(event_begin_date__gte=date).count()
+        return Response(data={'count': count}, status=status.HTTP_200_OK)
+
+
+class UpcomingEventCountView(APIView):
+    permission_classes = (IsAdminUser,)
+
+    def get(self, request):
+        days = request.query_params['days']
+        today = datetime.datetime.now()
+        if int(days) == 0:
+            count = Event.objects.filter(
+                event_begin_date__gte=today).count()
+            return Response(data={'count': count}, status=status.HTTP_200_OK)
+
+        date = datetime.datetime.today() + datetime.timedelta(days=int(days))
+        count = Event.objects.filter(
+            event_begin_date__lte=date, event_begin_date__gte=today).count()
+        return Response(data={'count': count}, status=status.HTTP_200_OK)
