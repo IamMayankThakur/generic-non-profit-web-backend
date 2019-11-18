@@ -12,26 +12,11 @@ from rest_framework import parsers
 from rest_framework import status
 from rest_framework import viewsets
 from django.contrib.auth.models import User
-<< << << < HEAD
-
-
-class HelloView(APIView):
-    permission_classes = (IsAuthenticated,)
-
-
-== == == =
-
-
-class HelloView(APIView):
-    permission_classes = (IsAuthenticated,)
-
-
->>>>>> > 287a2afb1ce866fe4316a6842947ea8424ad2c6b
 
 
 def get(self, request):
-        content = {'message': 'Hello, World!'}
-        return Response(content)
+    content = {'message': 'Hello, World!'}
+    return Response(content)
 
 
 class SignUpView(APIView):
@@ -49,12 +34,6 @@ class SignUpView(APIView):
         except Exception as e:
             return Response(data={'message': 'User creation failed'}, status=status.HTTP_400_BAD_REQUEST)
         return Response(data={'message': 'User Created'}, status=status.HTTP_201_CREATED)
-
-
-<< << << < HEAD
-
-== == == =
->>>>>> > 287a2afb1ce866fe4316a6842947ea8424ad2c6b
 
 
 class UpdateDetailsView(APIView):
