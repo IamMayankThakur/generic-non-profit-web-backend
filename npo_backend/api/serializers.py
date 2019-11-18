@@ -12,7 +12,7 @@ class AdminUserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('is_stafff', 'id', 'first_name')
+        fields = ('is_staff', 'id', 'first_name')
 
 class UserProfileSerializer(serializers.ModelSerializer):
     

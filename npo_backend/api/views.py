@@ -11,6 +11,8 @@ from django.contrib.auth.models import User
 from .models import UserProfile,Event,Expense,Donation,FormMetaData,FormResponse,FormMetaData
 from .serializers import UserProfileSerializer,EventSerializer,DonationSerializer,ExpenseSerializer,UserSerializer,FormMetaDataSerializer,FormResponseSerializer,AdminUserSerializer
 
+import datetime
+
 class HelloView(APIView):
     permission_classes = (IsAuthenticated,)
     def get(self, request):
@@ -205,9 +207,9 @@ class CreditDebitCurrentMonthView(APIView):
         expense_records = Expense.objects.filter(timestamp__date__gte = datetime.date.today() - datetime.timedelta(days = 30))
         credit_amount,debit_amount = 0,0
         for record in expense_records:
-            if record.credit:
+            if record.credit:         
                 credit_amount += record.amount
             else:
                 debit_amount += record.amount
-        content = ('credit' : credit_amount, 'debit' : debit_amount)
-        return Reponse(content)
+        content = {'credit' : credit_amount, 'debit' : debit_amount}
+        return Response(content)
