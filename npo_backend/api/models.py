@@ -27,9 +27,11 @@ class Event(models.Model):
     created_on = models.DateTimeField(default=timezone.now)
     event_begin_date = models.DateField(blank=True, null=True)
     event_end_date = models.DateField(blank=True, null=True)
-    event_created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='event_created_by')
+    event_created_by = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name='events_created')
     trash = models.BooleanField(default=False)
-    users_registered = models.ManyToManyField(User, related_name='users_registered')
+    users_registered = models.ManyToManyField(
+        User, related_name='events_registered_for')
 
     def __str__(self):
         return super().__str__() + str(self.name)
@@ -39,11 +41,13 @@ class Donation(models.Model):
     donor = models.ForeignKey(User, on_delete=models.CASCADE)
     amount = models.FloatField(blank=False)
     remark = models.TextField(blank=True, null=True)
-    event = models.ForeignKey(Event, on_delete=models.CASCADE, blank=True, null=True)
+    event = models.ForeignKey(
+        Event, on_delete=models.CASCADE, blank=True, null=True)
     donated_on = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
-        return f'Donation by {self.donor} of {self.amount} ' + super().__str__() 
+        return f'Donation by {self.donor} of {self.amount} ' + super().__str__()
+
 
 class FormMetaData(models.Model):
     form_name = models.CharField(
@@ -67,6 +71,7 @@ class Expense(models.Model):
     amount = models.FloatField()
     timestamp = models.DateTimeField(default=timezone.now)
     updated_by = models.ForeignKey(User, on_delete=models.CASCADE)
+
 
 class MailingList(models.Model):
     email_id = models.EmailField(blank=False)

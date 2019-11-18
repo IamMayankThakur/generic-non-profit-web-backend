@@ -1,3 +1,7 @@
+from .serializers import UserProfileSerializer, EventSerializer, DonationSerializer, ExpenseSerializer, UserSerializer
+import datetime as datetime
+from .serializers import UserProfileSerializer, EventSerializer, DonationSerializer, ExpenseSerializer
+from .models import UserProfile, Event, Expense, Donation, FormMetaData, FormResponse
 from rest_framework.generics import UpdateAPIView, RetrieveUpdateDestroyAPIView, ListAPIView
 from rest_framework.views import APIView
 from rest_framework import status
@@ -8,15 +12,24 @@ from rest_framework import parsers
 from rest_framework import status
 from rest_framework import viewsets
 from django.contrib.auth.models import User
-from .models import UserProfile, Event, Expense, Donation, FormMetaData, FormResponse
-from .serializers import UserProfileSerializer, EventSerializer, DonationSerializer, ExpenseSerializer
-import datetime as datetime
+<< << << < HEAD
 
 
 class HelloView(APIView):
     permission_classes = (IsAuthenticated,)
 
-    def get(self, request):
+
+== == == =
+
+
+class HelloView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+
+>>>>>> > 287a2afb1ce866fe4316a6842947ea8424ad2c6b
+
+
+def get(self, request):
         content = {'message': 'Hello, World!'}
         return Response(content)
 
@@ -36,6 +49,12 @@ class SignUpView(APIView):
         except Exception as e:
             return Response(data={'message': 'User creation failed'}, status=status.HTTP_400_BAD_REQUEST)
         return Response(data={'message': 'User Created'}, status=status.HTTP_201_CREATED)
+
+
+<< << << < HEAD
+
+== == == =
+>>>>>> > 287a2afb1ce866fe4316a6842947ea8424ad2c6b
 
 
 class UpdateDetailsView(APIView):
@@ -214,3 +233,14 @@ class UpcomingEventCountView(APIView):
         count = Event.objects.filter(
             event_begin_date__lte=date, event_begin_date__gte=today).count()
         return Response(data={'count': count}, status=status.HTTP_200_OK)
+
+
+class RegisteredForEventView(ListAPIView):
+    def get_queryset(self):
+        event_id = self.request.query_params.get('eventId')
+        queryset = User.objects.filter(events_registered_for__pk=event_id)
+        return queryset
+
+    permission_classes = (IsAuthenticated,)
+    parser_classes = (parsers.JSONParser,)
+    serializer_class = UserSerializer
