@@ -1,5 +1,5 @@
 from rest_framework import serializers 
-from .models import UserProfile,Event,Donation,Expense
+from .models import UserProfile,Event,Donation,Expense,FormMetaData,FormResponse
 from django.contrib.auth.models import User
 
 class UserSerializer(serializers.ModelSerializer):
@@ -29,3 +29,14 @@ class ExpenseSerializer(serializers.ModelSerializer):
     class Meta:
         model = Expense
         fields = '__all__'
+
+class FormMetaDataSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = FormMetaData
+        fields = ('form_name','created_by','form_image','field_cords')
+
+
+class FormResponseSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = FormResponseSerializer
+        fields = ('form', 'response', 'filled_by')
