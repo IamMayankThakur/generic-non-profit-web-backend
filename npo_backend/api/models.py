@@ -39,7 +39,7 @@ class Donation(models.Model):
     donor = models.ForeignKey(User, on_delete=models.CASCADE)
     amount = models.FloatField(blank=False)
     remark = models.TextField(blank=True, null=True)
-    event = models.ForeignKey(Event, on_delete=models.CASCADE, blank=True)
+    event = models.ForeignKey(Event, on_delete=models.CASCADE, blank=True, null=True)
     donated_on = models.DateTimeField(default=timezone.now)
 
     def __str__(self):

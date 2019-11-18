@@ -38,7 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'api.apps.ApiConfig',
-    'django_rest_passwordreset',
+    # 'django_rest_passwordreset',
     # 'paypal.standard.ipn',
 ]
 

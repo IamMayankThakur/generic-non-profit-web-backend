@@ -1,21 +1,23 @@
-from rest_framework.generics import UpdateAPIView,RetrieveUpdateDestroyAPIView,ListAPIView
+from rest_framework.generics import UpdateAPIView, RetrieveUpdateDestroyAPIView, ListAPIView
 from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework import parsers
-from rest_framework import status 
+from rest_framework import status
 from rest_framework import viewsets
 from django.contrib.auth.models import User
-from .models import UserProfile,Event,Expense,Donation,FormMetaData,FormResponse
-from .serializers import UserProfileSerializer,EventSerializer,DonationSerializer,ExpenseSerializer
+from .models import UserProfile, Event, Expense, Donation, FormMetaData, FormResponse
+from .serializers import UserProfileSerializer, EventSerializer, DonationSerializer, ExpenseSerializer
+import datetime as datetime
+
 
 class HelloView(APIView):
-    #permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated,)
 
-#     def get(self, request):
-#         content = {'message': 'Hello, World!'}
-#         return Response(content)
+    def get(self, request):
+        content = {'message': 'Hello, World!'}
+        return Response(content)
 
 
 class SignUpView(APIView):
@@ -33,40 +35,44 @@ class SignUpView(APIView):
         except Exception as e:
             return Response(data={'message': 'User creation failed'}, status=status.HTTP_400_BAD_REQUEST)
         return Response(data={'message': 'User Created'}, status=status.HTTP_201_CREATED)
+
+
 class UpdateDetailsView(APIView):
 
     permission_classes = (IsAuthenticated,)
     parser_classes = (parsers.JSONParser,)
-    def post(self,request):
+
+    def post(self, request):
         try:
             print('Current credentials are:')
             print(request.user.userprofile.__dict__)
-            user_profile = request.user.userprofile 
+            user_profile = request.user.userprofile
             data = request.data
             print(data)
             print('*****')
-            for key,value in data.items():
-                setattr(user_profile,key,value)
+            for key, value in data.items():
+                setattr(user_profile, key, value)
             user_profile.save()
             print('New credentials are:')
             print(user_profile.__dict__)
-            return Response(status = status.HTTP_200_OK, data = {'message' : 'Updated'})
+            return Response(status=status.HTTP_200_OK, data={'message': 'Updated'})
 
         except Exception as e:
             print(e)
             print(type(e))
-            return Response(data = {'message': 'Update failed'},status = 400)
+            return Response(data={'message': 'Update failed'}, status=400)
 
-#To put account id based operations together
+
+# To put account id based operations together
 '''
 class EventViewSet(viewsets.ModelViewSet):
     queryset = Event.objects.all()
     serializer_class = EventSerializer
     permission_classes = (IsAuthenticated,)
 '''
- 
 
-#using PATCH instead of POST for updating an existing record
+
+# using PATCH instead of POST for updating an existing record
 class EventView(RetrieveUpdateDestroyAPIView):
     permission_classes = (IsAuthenticated,)
     parser_classes = (parsers.JSONParser,)
@@ -80,6 +86,7 @@ class ExpenseView(RetrieveUpdateDestroyAPIView):
     queryset = Expense.objects.all()
     serializer_class = ExpenseSerializer
 
+
 class EventDateView(ListAPIView):
 
     def get_queryset(self):
@@ -87,7 +94,8 @@ class EventDateView(ListAPIView):
         print(type(start_date))
         print(f'Starting date is: {start_date}')
         end_date = self.request.query_params.get('endDate')
-        queryset = Event.objects.filter(event_begin_date__gte = start_date).filter(event_end_date__lte = end_date)
+        queryset = Event.objects.filter(event_begin_date__gte=start_date).filter(
+            event_end_date__lte=end_date)
         #queryset = Event.objects.filter(event_begin_date__gte = start_date)
         return queryset
 
@@ -100,31 +108,76 @@ class DonationDateView(ListAPIView):
     def get_queryset(self):
         intial_date = self.request.query_params.get('startDate')
         final_date = self.request.query_params.get('endDate')
-        queryset = Donation.objects.filter(donated_on__range = [intial_date,final_date])
+        queryset = Donation.objects.filter(
+            donated_on__range=[intial_date, final_date])
         return queryset
 
     permission_classes = (IsAuthenticated,)
     parser_classes = (parsers.JSONParser,)
     serializer_class = DonationSerializer
 
+
 class ExpenseDateView(ListAPIView):
     def get_queryset(self):
         intial_date = self.request.query_params.get('startDate')
         final_date = self.request.query_params.get('endDate')
-        queryset = Expense.objects.filter(timestamp__range = [intial_date,final_date])
+        queryset = Expense.objects.filter(
+            timestamp__range=[intial_date, final_date])
         return queryset
 
     permission_classes = (IsAuthenticated,)
     parser_classes = (parsers.JSONParser,)
     serializer_class = ExpenseSerializer
 
+
 class UserDateView(ListAPIView):
     def get_queryset(self):
         intial_date = self.request.query_params.get('startDate')
         final_date = self.request.query_params.get('endDate')
-        queryset = UserProfile.objects.filter(dob__range = [intial_date,final_date])
+        queryset = UserProfile.objects.filter(
+            dob__range=[intial_date, final_date])
         return queryset
 
     permission_classes = (IsAuthenticated,)
     parser_classes = (parsers.JSONParser,)
     serializer_class = UserProfileSerializer
+
+
+class DonationCountView(APIView):
+
+    permission_classes = (IsAdminUser,)
+
+    def get(self, request):
+        days = request.query_params['days']
+        if int(days) == 0:
+            count = Donation.objects.all().count()
+            return Response(data={'count': count}, status=status.HTTP_200_OK)
+
+        date = datetime.datetime.today() - datetime.timedelta(days=int(days))
+        count = Donation.objects.filter(donated_on__gte=date).count()
+        return Response(data={'count': count}, status=status.HTTP_200_OK)
+
+
+class UserCountView(APIView):
+
+    permission_classes = (IsAdminUser,)
+
+    def get(self, request):
+        days = request.query_params['days']
+        if int(days) == 0:
+            count = User.objects.all().count()
+            return Response(data={'count': count}, status=status.HTTP_200_OK)
+
+        date = datetime.datetime.today() - datetime.timedelta(days=int(days))
+        count = User.objects.filter(date_joined__gte=date).count()
+        return Response(data={'count': count}, status=status.HTTP_200_OK)
+
+
+class DonationView(APIView):
+
+    permission_classes = (IsAdminUser,)
+
+    def get(self, request):
+        date = datetime.datetime.today() - datetime.timedelta(days=30)
+        donations = list(Donation.objects.filter(donated_on__gte=date).values('donated_on', 'amount'))  
+        return Response(data=donations, status=status.HTTP_200_OK)
