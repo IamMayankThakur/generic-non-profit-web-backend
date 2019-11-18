@@ -38,5 +38,5 @@ class FormMetaDataSerializer(serializers.ModelSerializer):
 
 class FormResponseSerializer(serializers.ModelSerializer):
     class Meta:
-        model = FormResponseSerializer
+        model = FormResponse
         fields = ('form', 'response', 'filled_by')
