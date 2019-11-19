@@ -54,7 +54,170 @@ class HelloViewTest(APITestCase):
         self.client.credentials(HTTP_AUTHORIZATION = 'Bearer ' + self.access_token)
     
     def test_get_event(self):
-        response = self.client.get(self.url)
+        response = self.client.get("/api/v1/hello/")
+        self.assertEqual(response.status_code,200)
+    
+    def tearDown(self):
+        user = User.objects.get(username = USERNAME)
+        user.delete()
+ 
+
+
+
+
+class update_detailsTest(APITestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(USERNAME, email = EMAIL, password = PASSWORD)
+        self.url = '/api/v1/update_details/'
+        self.response = self.client.post('/api/token/',{'username':USERNAME,'password':PASSWORD})
+        self.refresh_token = self.response.data['refresh']
+        self.access_token = self.response.data['access']
+        self.client.credentials(HTTP_AUTHORIZATION = 'Bearer ' + self.access_token)
+    
+    def test_get_event(self):
+        response = self.client.get("/api/v1/update_details/")
+        self.assertEqual(response.status_code,200)
+    
+    def tearDown(self):
+        user = User.objects.get(username = USERNAME)
+        user.delete()
+ 
+
+
+
+
+class EventViewTest(APITestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(USERNAME, email = EMAIL, password = PASSWORD)
+        self.url = '/api/v1/event/<pk>/'
+        self.response = self.client.post('/api/token/',{'username':USERNAME,'password':PASSWORD})
+        self.refresh_token = self.response.data['refresh']
+        self.access_token = self.response.data['access']
+        self.client.credentials(HTTP_AUTHORIZATION = 'Bearer ' + self.access_token)
+    
+    def test_get_event(self):
+        response = self.client.get("/api/v1/event/<pk>/")
+        self.assertEqual(response.status_code,200)
+    
+    def tearDown(self):
+        user = User.objects.get(username = USERNAME)
+        user.delete()
+ 
+
+
+class ExpenseViewTest(APITestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(USERNAME, email = EMAIL, password = PASSWORD)
+        self.url = '/api/v1/expense/<pk>/'
+        self.response = self.client.post('/api/token/',{'username':USERNAME,'password':PASSWORD})
+        self.refresh_token = self.response.data['refresh']
+        self.access_token = self.response.data['access']
+        self.client.credentials(HTTP_AUTHORIZATION = 'Bearer ' + self.access_token)
+    
+    def test_get_event(self):
+        response = self.client.get("/api/v1/expense/<pk>/")
+        self.assertEqual(response.status_code,200)
+    
+    def tearDown(self):
+        user = User.objects.get(username = USERNAME)
+        user.delete()
+ 
+
+
+
+
+
+class ExpenseDateViewTest(APITestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(USERNAME, email = EMAIL, password = PASSWORD)
+        self.url = '/api/v1/get_expenses/'
+        self.response = self.client.post('/api/token/',{'username':USERNAME,'password':PASSWORD})
+        self.refresh_token = self.response.data['refresh']
+        self.access_token = self.response.data['access']
+        self.client.credentials(HTTP_AUTHORIZATION = 'Bearer ' + self.access_token)
+    
+    def test_get_event(self):
+        response = self.client.get("/api/v1/get_expenses/")
+        self.assertEqual(response.status_code,200)
+    
+    def tearDown(self):
+        user = User.objects.get(username = USERNAME)
+        user.delete()
+ 
+
+
+
+class EventDateViewTest(APITestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(USERNAME, email = EMAIL, password = PASSWORD)
+        self.url = '/api/v1/get_events/'
+        self.response = self.client.post('/api/token/',{'username':USERNAME,'password':PASSWORD})
+        self.refresh_token = self.response.data['refresh']
+        self.access_token = self.response.data['access']
+        self.client.credentials(HTTP_AUTHORIZATION = 'Bearer ' + self.access_token)
+    
+    def test_get_event(self):
+        response = self.client.get("/api/v1/get_events/")
+        self.assertEqual(response.status_code,200)
+    
+    def tearDown(self):
+        user = User.objects.get(username = USERNAME)
+        user.delete()
+
+
+
+
+
+class  DonationDateViewTest(APITestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(USERNAME, email = EMAIL, password = PASSWORD)
+        self.url = '/api/v1/get_donations/'
+        self.response = self.client.post('/api/token/',{'username':USERNAME,'password':PASSWORD})
+        self.refresh_token = self.response.data['refresh']
+        self.access_token = self.response.data['access']
+        self.client.credentials(HTTP_AUTHORIZATION = 'Bearer ' + self.access_token)
+    
+    def test_get_event(self):
+        response = self.client.get("/api/v1/get_donations/")
+        self.assertEqual(response.status_code,200)
+    
+    def tearDown(self):
+        user = User.objects.get(username = USERNAME)
+        user.delete()
+
+
+
+class UserDateViewTest(APITestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(USERNAME, email = EMAIL, password = PASSWORD)
+        self.url = '/api/v1/get_users/'
+        self.response = self.client.post('/api/token/',{'username':USERNAME,'password':PASSWORD})
+        self.refresh_token = self.response.data['refresh']
+        self.access_token = self.response.data['access']
+        self.client.credentials(HTTP_AUTHORIZATION = 'Bearer ' + self.access_token)
+    
+    def test_get_event(self):
+        response = self.client.get("/api/v1/get_users/")
+        self.assertEqual(response.status_code,200)
+    
+    def tearDown(self):
+        user = User.objects.get(username = USERNAME)
+        user.delete()
+ 
+
+
+
+class RegisteredForEventView(APITestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(USERNAME, email = EMAIL, password = PASSWORD)
+        self.url = '/api/v1/get_registered_users/'
+        self.response = self.client.post('/api/token/',{'username':USERNAME,'password':PASSWORD})
+        self.refresh_token = self.response.data['refresh']
+        self.access_token = self.response.data['access']
+        self.client.credentials(HTTP_AUTHORIZATION = 'Bearer ' + self.access_token)
+    
+    def test_get_event(self):
+        response = self.client.get("/api/v1/get_registered_users/")
         self.assertEqual(response.status_code,200)
     
     def tearDown(self):
