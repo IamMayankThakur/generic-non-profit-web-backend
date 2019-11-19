@@ -12,6 +12,7 @@ from django.contrib.auth.models import User
 from .models import UserProfile,Event,Expense,Donation,FormMetaData,FormResponse,FormMetaData
 from .serializers import UserProfileSerializer,EventSerializer,DonationSerializer,ExpenseSerializer,UserSerializer,FormMetaDataSerializer,FormResponseSerializer,AdminUserSerializer
 from paypal.standard.forms import PayPalPaymentsForm
+
 import datetime
 
 class HelloView(APIView):
@@ -190,7 +191,7 @@ class FormDetailsView(ListAPIView):
 class GenericExpenseView(ListAPIView):
     def get_queryset(self):
         queryset = Expense.objects.filter(timestamp__date__gte = datetime.date.today() - datetime.timedelta(days = 20))
-        return queryset.values()
+        return queryset
 
     permission_classes = (IsAuthenticated,)
     parser_classes = (parsers.JSONParser,)

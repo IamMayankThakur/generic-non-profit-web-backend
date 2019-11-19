@@ -134,7 +134,9 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 REST_FRAMEWORK = {
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    
+    'DEFAULT_PAGINATION_CLASS': 'api.utils.PageNumberPaginationDataOnly',
+    #'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 10,
     'DEFAULT_PERMISSION_CLASSES': (
         # 'rest_framework.permissions.IsAuthenticated',
@@ -154,3 +156,4 @@ EMAIL_HOST_USER  = 'noreplybigdata@gmail.com'
 EMAIL_HOST_PASSWORD = 'bigdata2019'
 EMAIL_PORT = 465
 EMAIL_USE_SSL = True
+

@@ -11,8 +11,10 @@ urlpatterns = [
     path('update_details/',views.UpdateDetailsView.as_view(),name = 'update'),
     path('event/',views.CreateEventView.as_view(),name = 'post-event'),
     path('event/<pk>/',views.EventView.as_view(),name = 'event'),
+
     path('expense/',views.CreateExpenseView.as_view(),name = 'expense'),
     path('expense/<pk>/',views.ExpenseView.as_view(),name = 'expense'),
+    
     path('get_expenses/',views.ExpenseDateView.as_view(),name ='expenses_by_date'),
     path('get_events/',views.EventDateView.as_view(),name = 'events_by_date'),
     path('get_donations/',views.DonationDateView.as_view(),name = 'donations_by_date'),
