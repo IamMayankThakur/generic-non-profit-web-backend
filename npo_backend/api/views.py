@@ -29,12 +29,12 @@ class SignUpView(APIView):
         try:
             user = User.objects.create_user(
                 username=request.data['email'], email=request.data['email'], password=request.data['password'],
-                first_name=request.data['first_name'], last_name=request.data['last_name'], is_staff=False,
+                first_name=request.data['fname'], last_name=request.data['lname'], is_staff=False,
                 is_superuser=False)
             user.save()
             profile = UserProfile(user=user, dob=request.data['dob'],
                                   designation=request.data['designation'], address=request.data['address'],
-                                  phone_number=request.data['phone_number'])
+                                  phone_number=request.data['phno'])
             profile.save()
         except Exception as e:
             return Response(data={'message': 'User creation failed'}, status=status.HTTP_400_BAD_REQUEST)
