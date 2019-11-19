@@ -38,7 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'api.apps.ApiConfig',
-    'django_rest_passwordreset',
+    'corsheaders',
+    # 'django_rest_passwordreset',
     # 'paypal.standard.ipn',
 ]
 
@@ -50,6 +51,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
 ROOT_URLCONF = 'npo_backend.urls'
@@ -88,7 +90,8 @@ DATABASES = {
         # 'ENGINE': 'django.db.backends.postgresql',
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'postgres',
-        'USER': 'postgres',
+        'USER': 'megh',
+        # 'USER': 'postgres',
         'PASSWORD': 'postgres',
         'HOST': '127.0.0.1',
         'PORT': '5432',
@@ -134,7 +137,9 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 REST_FRAMEWORK = {
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+
+    'DEFAULT_PAGINATION_CLASS': 'api.utils.PageNumberPaginationDataOnly',
+    # 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 10,
     'DEFAULT_PERMISSION_CLASSES': (
         # 'rest_framework.permissions.IsAuthenticated',
@@ -143,13 +148,16 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
         # 'rest_framework.authentication.SessionAuthentication',
     ),
-    'TEST_REQUEST_DEFAULT_FORMAT' : 'json',
+    'TEST_REQUEST_DEFAULT_FORMAT': 'json',
 }
 
-# PAYPAL_TEST = True
+
+PAYPAL_TEST = True
 
 EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_HOST_USER  = 'noreplybigdata@gmail.com'
+EMAIL_HOST_USER = 'noreplybigdata@gmail.com'
 EMAIL_HOST_PASSWORD = 'bigdata2019'
 EMAIL_PORT = 465
 EMAIL_USE_SSL = True
+
+CORS_ORIGIN_ALLOW_ALL = True
