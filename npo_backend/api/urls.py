@@ -7,8 +7,6 @@ app_name = 'api'
 urlpatterns = [
     # path('hello/', views.HelloView.as_view(), name='hello'),
     path('signup/', views.SignUpView.as_view(), name='sign up'),
-    path('hello/', views.HelloView.as_view(), name='hello'),
-    path('expense/<pk>/', views.ExpenseView.as_view(), name='expense'),
     path('donations_count/', views.DonationCountView.as_view(),
          name='count donation by date'),
     path('users_count/', views.UserCountView.as_view(), name='count user by date'),
