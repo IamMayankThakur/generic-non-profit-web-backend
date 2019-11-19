@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'api.apps.ApiConfig',
+    'corsheaders',
     # 'django_rest_passwordreset',
     # 'paypal.standard.ipn',
 ]
@@ -50,6 +51,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
 ROOT_URLCONF = 'npo_backend.urls'
@@ -153,3 +155,5 @@ EMAIL_HOST_USER  = 'noreplybigdata@gmail.com'
 EMAIL_HOST_PASSWORD = 'bigdata2019'
 EMAIL_PORT = 465
 EMAIL_USE_SSL = True
+
+CORS_ORIGIN_ALLOW_ALL = True
