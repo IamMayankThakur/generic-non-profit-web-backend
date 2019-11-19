@@ -27,6 +27,7 @@ def get(self, request):
 class SignUpView(APIView):
     def post(self, request):
         try:
+            import pdb
             user = User.objects.create_user(
                 username=request.data['email'], email=request.data['email'], password=request.data['password'],
                 first_name=request.data['fname'], last_name=request.data['lname'], is_staff=False,
@@ -35,6 +36,7 @@ class SignUpView(APIView):
             profile = UserProfile(user=user, dob=request.data['dob'],
                                   designation=request.data['designation'], address=request.data['address'],
                                   phone_number=request.data['phno'])
+            # pdb.set_trace()
             profile.save()
         except Exception as e:
             return Response(data={'message': 'User creation failed'}, status=status.HTTP_400_BAD_REQUEST)
