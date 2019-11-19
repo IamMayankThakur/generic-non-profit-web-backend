@@ -39,7 +39,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'api.apps.ApiConfig',
     'django_rest_passwordreset',
-    # 'paypal.standard.ipn',
+    'paypal.standard.ipn',
 ]
 
 MIDDLEWARE = [
@@ -146,7 +146,8 @@ REST_FRAMEWORK = {
     'TEST_REQUEST_DEFAULT_FORMAT' : 'json',
 }
 
-# PAYPAL_TEST = True
+
+PAYPAL_TEST = True
 
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_HOST_USER  = 'noreplybigdata@gmail.com'

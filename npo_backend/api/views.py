@@ -1,4 +1,5 @@
 from rest_framework.generics import UpdateAPIView,RetrieveUpdateDestroyAPIView,ListAPIView, CreateAPIView,ListCreateAPIView
+from rest_framework.mixins import CreateModelMixin
 from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.response import Response
@@ -10,7 +11,7 @@ from rest_framework import viewsets
 from django.contrib.auth.models import User
 from .models import UserProfile,Event,Expense,Donation,FormMetaData,FormResponse,FormMetaData
 from .serializers import UserProfileSerializer,EventSerializer,DonationSerializer,ExpenseSerializer,UserSerializer,FormMetaDataSerializer,FormResponseSerializer,AdminUserSerializer
-
+from paypal.standard.forms import PayPalPaymentsForm
 import datetime
 
 class HelloView(APIView):
@@ -70,11 +71,21 @@ class EventViewSet(viewsets.ModelViewSet):
  
 
 #using PATCH instead of POST for updating an existing record
-class EventView(RetrieveUpdateDestroyAPIView):
+class EventView(RetrieveUpdateDestroyAPIView,CreateModelMixin):
+
     permission_classes = (IsAuthenticated,)
     parser_classes = (parsers.JSONParser,)
     queryset = Event.objects.all()
     serializer_class = EventSerializer
+
+
+class CreateEventView(CreateAPIView):
+    
+    permission_classes = (IsAuthenticated,)
+    parser_classes = (parsers.JSONParser,)
+    queryset = Event.objects.all()
+    serializer_class = EventSerializer
+
 
 
 class ExpenseView(RetrieveUpdateDestroyAPIView):
@@ -83,6 +94,15 @@ class ExpenseView(RetrieveUpdateDestroyAPIView):
     parser_classes = (parsers.JSONParser,)
     queryset = Expense.objects.all()
     serializer_class = ExpenseSerializer
+
+
+class CreateExpenseView(CreateAPIView):
+
+    permission_classes = (IsAuthenticated,)
+    parser_classes = (parsers.JSONParser,)
+    queryset = Expense.objects.all()
+    serializer_class = ExpenseSerializer
+
 
 class EventDateView(ListAPIView):
 
@@ -170,7 +190,7 @@ class FormDetailsView(ListAPIView):
 class GenericExpenseView(ListAPIView):
     def get_queryset(self):
         queryset = Expense.objects.filter(timestamp__date__gte = datetime.date.today() - datetime.timedelta(days = 20))
-        return queryset
+        return queryset.values()
 
     permission_classes = (IsAuthenticated,)
     parser_classes = (parsers.JSONParser,)
@@ -213,3 +233,15 @@ class CreditDebitCurrentMonthView(APIView):
                 debit_amount += record.amount
         content = {'credit' : credit_amount, 'debit' : debit_amount}
         return Response(content)
+
+'''
+class PayPalPaymentsView(APIView):
+    def get(self,request):
+        payment_information = {
+            'username' : request.user.username,
+            'amount' : 1000,
+            
+        }
+        payment_form = PayPalPaymentsForm(initial = payment_information)
+        context = {'form' : payment_form}
+'''
