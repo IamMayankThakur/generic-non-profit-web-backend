@@ -137,9 +137,9 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 REST_FRAMEWORK = {
-    
+
     'DEFAULT_PAGINATION_CLASS': 'api.utils.PageNumberPaginationDataOnly',
-    #'rest_framework.pagination.PageNumberPagination',
+    # 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 10,
     'DEFAULT_PERMISSION_CLASSES': (
         # 'rest_framework.permissions.IsAuthenticated',
@@ -148,14 +148,14 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
         # 'rest_framework.authentication.SessionAuthentication',
     ),
-    'TEST_REQUEST_DEFAULT_FORMAT' : 'json',
+    'TEST_REQUEST_DEFAULT_FORMAT': 'json',
 }
 
 
 PAYPAL_TEST = True
 
 EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_HOST_USER  = 'noreplybigdata@gmail.com'
+EMAIL_HOST_USER = 'noreplybigdata@gmail.com'
 EMAIL_HOST_PASSWORD = 'bigdata2019'
 EMAIL_PORT = 465
 EMAIL_USE_SSL = True

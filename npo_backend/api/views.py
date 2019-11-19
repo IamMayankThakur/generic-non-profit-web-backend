@@ -2,7 +2,7 @@ from .serializers import UserProfileSerializer, EventSerializer, DonationSeriali
 import datetime as datetime
 from .serializers import UserProfileSerializer, EventSerializer, DonationSerializer, ExpenseSerializer
 from .models import UserProfile, Event, Expense, Donation, FormMetaData, FormResponse
-from rest_framework.generics import UpdateAPIView,RetrieveUpdateDestroyAPIView,ListAPIView, CreateAPIView,ListCreateAPIView
+from rest_framework.generics import UpdateAPIView, RetrieveUpdateDestroyAPIView, ListAPIView, CreateAPIView, ListCreateAPIView
 from rest_framework.mixins import CreateModelMixin
 from rest_framework.views import APIView
 from rest_framework import status
@@ -79,8 +79,8 @@ class EventViewSet(viewsets.ModelViewSet):
 '''
 
 
-#using PATCH instead of POST for updating an existing record
-class EventView(RetrieveUpdateDestroyAPIView,CreateModelMixin):
+# using PATCH instead of POST for updating an existing record
+class EventView(RetrieveUpdateDestroyAPIView, CreateModelMixin):
 
     permission_classes = (IsAuthenticated,)
     parser_classes = (parsers.JSONParser,)
@@ -89,12 +89,11 @@ class EventView(RetrieveUpdateDestroyAPIView,CreateModelMixin):
 
 
 class CreateEventView(CreateAPIView):
-    
+
     permission_classes = (IsAuthenticated,)
     parser_classes = (parsers.JSONParser,)
     queryset = Event.objects.all()
     serializer_class = EventSerializer
-
 
 
 class ExpenseView(RetrieveUpdateDestroyAPIView):
@@ -331,6 +330,7 @@ class CreditDebitCurrentMonthView(APIView):
                 debit_amount += record.amount
         content = {'credit': credit_amount, 'debit': debit_amount}
         return Response(content)
+
 
 '''
 class PayPalPaymentsView(APIView):
