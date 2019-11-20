@@ -332,6 +332,20 @@ class CreditDebitCurrentMonthView(APIView):
         content = {'credit': credit_amount, 'debit': debit_amount}
         return Response(content)
 
+class UpcomingEventsView(ListAPIView):
+
+    permission_classes = (IsAuthenticated,)
+    parser_classes = (parsers.JSONParser,)
+    serializer_class = EventSerializer
+
+    def get_queryset(self):
+        queryset = Event.objects.all()
+        #queryset = Event.objects.filter(event_begin_date__gte = datetime.date.today())
+        #queryset = Event.objects.filter(event_begin_date__gte = start_date)
+        return queryset
+    
+
+
 '''
 class PayPalPaymentsView(APIView):
     def get(self,request):

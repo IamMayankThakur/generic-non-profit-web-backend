@@ -17,18 +17,21 @@ urlpatterns = [
     path('events_count/', views.EventCountView.as_view(), name='Past Events'),
     path('event/<pk>/', views.EventView.as_view(), name='event'),
     path('update_details/',views.UpdateDetailsView.as_view(),name = 'update'),
-    path('event/',views.CreateEventView.as_view(),name = 'post-event'),
 
+    path('event/',views.CreateEventView.as_view(),name = 'post-event'),
+    path('event/<pk>/',views.EventView.as_view(),name = 'event'),
+    path('get_upcoming_events/',views.UpcomingEventsView.as_view(), name = 'upcoming-events'),
+    
     path('expense/',views.CreateExpenseView.as_view(),name = 'expense'),
     path('expense/<pk>/',views.ExpenseView.as_view(),name = 'expense'),
-    
     path('get_expenses/',views.ExpenseDateView.as_view(),name ='expenses_by_date'),
+    
     path('get_events/',views.EventDateView.as_view(),name = 'events_by_date'),
     path('get_donations/',views.DonationDateView.as_view(),name = 'donations_by_date'),
-    path('get_users_last_week',views.UsersFromPastWeekView.as_view(), name = 'last-week-users'),
-    path('get_user_details',views.AdminUserDetailsView.as_view(), name = 'get-user-details'), 
-    path('get_cd',views.CreditDebitCurrentMonthView.as_view(), name = 'get-credit-debit'),
-    path('get_expenditure',views.GenericExpenseView.as_view(), name = 'get-expenditure'),   
+    path('get_users_last_week/',views.UsersFromPastWeekView.as_view(), name = 'last-week-users'),
+    path('get_user_details/',views.AdminUserDetailsView.as_view(), name = 'get-user-details'), 
+    path('get_cd/',views.CreditDebitCurrentMonthView.as_view(), name = 'get-credit-debit'),
+    path('get_expenditure/',views.GenericExpenseView.as_view(), name = 'get-expenditure'),   
     path('get_users/', views.UserDateView.as_view(), name = 'users_by_date'),
     path('get_registered_users/',views.RegisteredForEventView.as_view(),name = 'registered_users'),
     path('fill_form/',views.FillFormView.as_view(), name = 'fill-form'),
