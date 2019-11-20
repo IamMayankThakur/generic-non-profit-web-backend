@@ -170,8 +170,6 @@ class UserDateView(ListAPIView):
 
 class DonationCountView(APIView):
 
-    permission_classes = (IsAdminUser,)
-
     def get(self, request):
         days = request.query_params['days']
         if int(days) == 0:
@@ -185,7 +183,7 @@ class DonationCountView(APIView):
 
 class UserCountView(APIView):
 
-    permission_classes = (IsAdminUser,)
+    permission_classes = (IsAuthenticated,)
 
     def get(self, request):
         days = request.query_params['days']
@@ -200,7 +198,7 @@ class UserCountView(APIView):
 
 class DonationView(APIView):
 
-    permission_classes = (IsAdminUser,)
+    permission_classes = (IsAuthenticated,)
 
     def get(self, request):
         date = datetime.datetime.today() - datetime.timedelta(days=30)
@@ -210,7 +208,6 @@ class DonationView(APIView):
 
 
 class EventCountView(APIView):
-    permission_classes = (IsAdminUser,)
 
     def get(self, request):
         days = request.query_params['days']
@@ -224,7 +221,6 @@ class EventCountView(APIView):
 
 
 class UpcomingEventCountView(APIView):
-    permission_classes = (IsAdminUser,)
 
     def get(self, request):
         days = request.query_params['days']

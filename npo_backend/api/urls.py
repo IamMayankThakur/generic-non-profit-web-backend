@@ -30,7 +30,7 @@ urlpatterns = [
          name='last-week-users'),
     path('get_user_details', views.AdminUserDetailsView.as_view(),
          name='get-user-details'),
-    path('get_cd', views.CreditDebitCurrentMonthView.as_view(),
+    path('get_cd/', views.CreditDebitCurrentMonthView.as_view(),
          name='get-credit-debit'),
     path('get_expenditure', views.GenericExpenseView.as_view(),
          name='get-expenditure'),

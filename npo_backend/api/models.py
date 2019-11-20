@@ -67,7 +67,7 @@ class FormResponse(models.Model):
 
 class Expense(models.Model):
     credit = models.BooleanField(default=True)
-    debit = models.BooleanField(default=False)
+    # debit = models.BooleanField(default=False)
     amount = models.FloatField()
     timestamp = models.DateTimeField(default=timezone.now)
     updated_by = models.ForeignKey(User, on_delete=models.CASCADE)
