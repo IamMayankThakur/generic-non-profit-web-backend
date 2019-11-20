@@ -101,7 +101,7 @@ class CreateEventView(APIView):
         event_begin = request.data['event_begin_date']
         event_end = request.data['event_end_date']
 
-        event = Event(name = name,event_begin_date = event_begin, event_end_date = event_end,event_created_by = user)
+        event = Event(name = name,description = description, event_begin_date = event_begin, event_end_date = event_end,event_created_by = user)
         event.save()
         return Response(data = {'Event' : 'Added'})
 
@@ -121,6 +121,8 @@ class ExpenseView(RetrieveUpdateDestroyAPIView):
 class CreateExpenseView(APIView):
 
     def post(self,request):
+        print(request.data)
+        print(request.POST)
         user = request.user
         debit = request.data['debit']
         amount = request.data['amount']
@@ -311,7 +313,7 @@ class AdminUserDetailsView(APIView):
 
     def get(self,request):
         user_details = User.objects.filter(pk = request.user.id).values('first_name','is_staff','is_superuser')
-        return Response(data=user_details)
+        return Response(data=user_details[0])
     
     '''
     def get_queryset(self):
@@ -348,7 +350,7 @@ class CreditDebitCurrentMonthView(APIView):
             timestamp__date__gte=datetime.date.today() - datetime.timedelta(days=30))
         credit_amount, debit_amount = 0, 0
         for record in expense_records:
-            if record.credit:
+            if record.debit == 0:
                 credit_amount += record.amount
             else:
                 debit_amount += record.amount
@@ -404,7 +406,7 @@ class GetDonationDataAsCSVView(APIView):
 
 class AddMailingListView(APIView):
     def post(self, request):
-        email = request.POST['email']
+        email = request.data['email_id']
         ml = MailingList(email_id=email)
         ml.save()
         return Response(data={'message': 'Added'}, status=status.HTTP_200_OK)
