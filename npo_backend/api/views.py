@@ -92,13 +92,22 @@ class EventView(RetrieveUpdateDestroyAPIView, CreateModelMixin):
     serializer_class = EventSerializer
 
 
-class CreateEventView(CreateAPIView):
+class CreateEventView(APIView):
+
+    def post(self,request):
+        user = request.user
+        name = request.data['name']
+        description = request.data['description']
+        event_begin = request.data['event_begin_date']
+        event_end = request.data['event_end_date']
+
+        event = Event(name = name,event_begin_date = event_begin, event_end_date = event_end,event_created_by = user)
+        event.save()
+        return Response(data = {'Event' : 'Added'})
 
     permission_classes = (IsAuthenticated,)
     parser_classes = (parsers.JSONParser,)
-    queryset = Event.objects.all()
-    serializer_class = EventSerializer
-
+    
 
 class ExpenseView(RetrieveUpdateDestroyAPIView):
     
@@ -302,15 +311,21 @@ class GenericExpenseView(ListAPIView):
     serializer_class = ExpenseSerializer
 
 
-class AdminUserDetailsView(ListAPIView):
+class AdminUserDetailsView(APIView):
+
+    def get(self,request):
+        user_details = User.objects.filter(pk = request.user.id).values('first_name','is_staff','is_superuser')
+        return Response(data=user_details)
+    
+    '''
     def get_queryset(self):
         users = User.objects.filter(is_superuser=True)
         return users
+    '''
 
     permission_classes = (IsAuthenticated,)
     parser_classes = (parsers.JSONParser,)
-    serializer_class = AdminUserSerializer
-
+    
 
 class UsersFromPastWeekView(APIView):
 
