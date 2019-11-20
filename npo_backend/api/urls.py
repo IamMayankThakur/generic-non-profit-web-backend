@@ -39,6 +39,9 @@ urlpatterns = [
          name='registered_users'),
     path('fill_form/', views.FillFormView.as_view(), name='fill-form'),
     path('get_form_data/', views.FormDetailsView.as_view(), name='form-data'),
+    path('get_expense_csv/', views.GetExpenseDataAsCSVView.as_view(), name='get csv data'),
+    path('get_donation_csv/', views.GetDonationDataAsCSVView.as_view(), name='get csv data'),
+    path('add_mailing_list/', views.AddMailingListView.as_view(), name='add user to mailing list'),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)

@@ -1,7 +1,7 @@
 from .serializers import UserProfileSerializer, EventSerializer, DonationSerializer, ExpenseSerializer, UserSerializer
 import datetime as datetime
 from .serializers import UserProfileSerializer, EventSerializer, DonationSerializer, ExpenseSerializer
-from .models import UserProfile, Event, Expense, Donation, FormMetaData, FormResponse
+from .models import UserProfile, Event, Expense, Donation, FormMetaData, FormResponse, MailingList
 from rest_framework.generics import UpdateAPIView, RetrieveUpdateDestroyAPIView, ListAPIView, CreateAPIView, ListCreateAPIView
 from rest_framework.mixins import CreateModelMixin
 from rest_framework.views import APIView
@@ -18,6 +18,10 @@ from .models import UserProfile, Event, Expense, Donation, FormMetaData, FormRes
 from .serializers import UserProfileSerializer, EventSerializer, DonationSerializer, ExpenseSerializer, UserSerializer, FormMetaDataSerializer, FormResponseSerializer, AdminUserSerializer
 
 import datetime
+from djqscsv import render_to_csv_response
+from django.http import HttpResponse
+from wsgiref.util import FileWrapper
+from djqscsv import write_csv
 
 
 def get(self, request):
@@ -343,3 +347,31 @@ class PayPalPaymentsView(APIView):
         payment_form = PayPalPaymentsForm(initial = payment_information)
         context = {'form' : payment_form}
 '''
+
+
+class GetExpenseDataAsCSVView(ListAPIView):
+    def get(self, request):
+        data = Expense.objects.filter(
+            timestamp__gte=datetime.datetime.now() - datetime.timedelta(days=30)).values()
+        with open('expense.csv', 'wb') as csv_file:
+            write_csv(data, csv_file)
+        file = open('expense.csv', 'rb')
+        return HttpResponse(FileWrapper(file), content_type='text/csv')
+
+
+class GetDonationDataAsCSVView(ListAPIView):
+    def get(self, request):
+        data = Donation.objects.filter(donated_on__gte=datetime.datetime.now(
+        ) - datetime.timedelta(days=30)).values('amount', 'remark', 'donated_on')
+        with open('donation.csv', 'wb') as csv_file:
+            write_csv(data, csv_file)
+        file = open('donation.csv', 'rb')
+        return HttpResponse(FileWrapper(file), content_type='text/csv')
+
+
+class AddMailingListView(ListAPIView):
+    def post(self, request):
+        email = request.POST['email']
+        ml = MailingList(email_id=email)
+        ml.save()
+        return Response(data={'message': 'Added'}, status=status.HTTP_200_OK)
