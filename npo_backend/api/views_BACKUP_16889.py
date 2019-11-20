@@ -391,20 +391,3 @@ class AddMailingListView(ListAPIView):
         ml = MailingList(email_id=email)
         ml.save()
         return Response(data={'message': 'Added'}, status=status.HTTP_200_OK)
-
-
-class AddFormView(ListAPIView):
-    def post(self, request):
-        file = request.FILES['file']
-        formname = request.POST['formname']
-        filename = request.POST['filename']
-        coords = request.POST['pos']
-        form_metadata = FormMetaData(
-            form_name=formname,
-            created_by=request.user, form_image=file, field_cords=coords
-        )
-        form_metadata.save()
-        return Response(data={'Form': 'Added'}, status=status.HTTP_200_OK)
-
-
-# class GetFormView(APIView):

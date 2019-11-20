@@ -25,9 +25,7 @@ class EventSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Event
-        fields = ('name','description','created_on',
-        'event_begin_date','event_end_date','event_created_by',
-        'trash')
+        fields = ('id','name','description','created_on','event_begin_date','event_end_date','event_created_by_id','trash')
 
 class DonationSerializer(serializers.ModelSerializer):
     
