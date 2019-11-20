@@ -46,7 +46,8 @@ urlpatterns = [
     path('get_expense_csv/', views.GetExpenseDataAsCSVView.as_view(), name='get csv expense data'),
     path('get_donation_csv/', views.GetDonationDataAsCSVView.as_view(), name='get csv donation data'),
     path('add_mailing_list/', views.AddMailingListView.as_view(), name='add user to mailing list'),
-    path('add_form/', views.AddFormView.as_view(), name='add user to mailing list'),
+    path('add_form/', views.AddFormView.as_view(), name='add Form to database'),
+    path('get_form/', views.GetFormView.as_view(), name='Get Form from database'),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)

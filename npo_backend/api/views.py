@@ -335,7 +335,6 @@ class CreditDebitCurrentMonthView(APIView):
         content = {'credit': credit_amount, 'debit': debit_amount}
         return Response(content)
 
-<<<<<<< HEAD
 class UpcomingEventsView(ListAPIView):
 
     permission_classes = (IsAuthenticated,)
@@ -349,8 +348,6 @@ class UpcomingEventsView(ListAPIView):
         return queryset
     
 
-=======
->>>>>>> staging
 
 '''
 class PayPalPaymentsView(APIView):
@@ -396,15 +393,20 @@ class AddMailingListView(ListAPIView):
 class AddFormView(ListAPIView):
     def post(self, request):
         file = request.FILES['file']
-        formname = request.POST['formname']
+        # formname = request.POST['formname']
         filename = request.POST['filename']
         coords = request.POST['pos']
         form_metadata = FormMetaData(
-            form_name=formname,
+            form_name=filename,
             created_by=request.user, form_image=file, field_cords=coords
         )
         form_metadata.save()
         return Response(data={'Form': 'Added'}, status=status.HTTP_200_OK)
 
 
-# class GetFormView(APIView):
+class GetFormView(APIView):
+    def get(self, request):
+        form_name = request.get_queryset.get('formname')
+        FormMetaData.objects.all()
+
+        
