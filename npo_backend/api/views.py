@@ -101,6 +101,7 @@ class CreateEventView(CreateAPIView):
 
 
 class ExpenseView(RetrieveUpdateDestroyAPIView):
+    
 
     permission_classes = (IsAuthenticated,)
     parser_classes = (parsers.JSONParser,)
@@ -108,12 +109,20 @@ class ExpenseView(RetrieveUpdateDestroyAPIView):
     serializer_class = ExpenseSerializer
 
 
-class CreateExpenseView(CreateAPIView):
+class CreateExpenseView(APIView):
+
+    def post(self,request):
+        user = request.user
+        debit = request.data['debit']
+        amount = request.data['amount']
+
+        expense = Expense(updated_by=user, debit=debit, amount=amount)
+        expense.save()
+
+        return Response(data={'Expense':'Added'},status=200)
 
     permission_classes = (IsAuthenticated,)
     parser_classes = (parsers.JSONParser,)
-    queryset = Expense.objects.all()
-    serializer_class = ExpenseSerializer
 
 
 class EventDateView(ListAPIView):
