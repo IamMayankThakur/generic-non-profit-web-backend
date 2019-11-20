@@ -92,13 +92,22 @@ class EventView(RetrieveUpdateDestroyAPIView, CreateModelMixin):
     serializer_class = EventSerializer
 
 
-class CreateEventView(CreateAPIView):
+class CreateEventView(APIView):
+
+    def post(self,request):
+        user = request.user
+        name = request.data['name']
+        description = request.data['description']
+        event_begin = request.data['event_begin_date']
+        event_end = request.data['event_end_date']
+
+        event = Event(user = user, name = name,event_begin_date = event_begin, event_end_date = event_end)
+        event.save()
+        return Response(data = {'Event' : 'Added'})
 
     permission_classes = (IsAuthenticated,)
     parser_classes = (parsers.JSONParser,)
-    queryset = Event.objects.all()
-    serializer_class = EventSerializer
-
+    
 
 class ExpenseView(RetrieveUpdateDestroyAPIView):
     
