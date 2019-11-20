@@ -1,7 +1,7 @@
 from .serializers import UserProfileSerializer, EventSerializer, DonationSerializer, ExpenseSerializer, UserSerializer
 import datetime as datetime
 from .serializers import UserProfileSerializer, EventSerializer, DonationSerializer, ExpenseSerializer
-from .models import UserProfile, Event, Expense, Donation, FormMetaData, FormResponse
+from .models import UserProfile, Event, Expense, Donation, FormMetaData, FormResponse, MailingList
 from rest_framework.generics import UpdateAPIView, RetrieveUpdateDestroyAPIView, ListAPIView, CreateAPIView, ListCreateAPIView
 from rest_framework.mixins import CreateModelMixin
 from rest_framework.views import APIView
@@ -18,6 +18,10 @@ from .models import UserProfile, Event, Expense, Donation, FormMetaData, FormRes
 from .serializers import UserProfileSerializer, EventSerializer, DonationSerializer, ExpenseSerializer, UserSerializer, FormMetaDataSerializer, FormResponseSerializer, AdminUserSerializer
 
 import datetime
+from djqscsv import render_to_csv_response
+from django.http import HttpResponse
+from wsgiref.util import FileWrapper
+from djqscsv import write_csv
 
 
 def get(self, request):
@@ -88,15 +92,25 @@ class EventView(RetrieveUpdateDestroyAPIView, CreateModelMixin):
     serializer_class = EventSerializer
 
 
-class CreateEventView(CreateAPIView):
+class CreateEventView(APIView):
+
+    def post(self,request):
+        user = request.user
+        name = request.data['name']
+        description = request.data['description']
+        event_begin = request.data['event_begin_date']
+        event_end = request.data['event_end_date']
+
+        event = Event(name = name,event_begin_date = event_begin, event_end_date = event_end,event_created_by = user)
+        event.save()
+        return Response(data = {'Event' : 'Added'})
 
     permission_classes = (IsAuthenticated,)
     parser_classes = (parsers.JSONParser,)
-    queryset = Event.objects.all()
-    serializer_class = EventSerializer
-
+    
 
 class ExpenseView(RetrieveUpdateDestroyAPIView):
+    
 
     permission_classes = (IsAuthenticated,)
     parser_classes = (parsers.JSONParser,)
@@ -104,12 +118,20 @@ class ExpenseView(RetrieveUpdateDestroyAPIView):
     serializer_class = ExpenseSerializer
 
 
-class CreateExpenseView(CreateAPIView):
+class CreateExpenseView(APIView):
+
+    def post(self,request):
+        user = request.user
+        debit = request.data['debit']
+        amount = request.data['amount']
+
+        expense = Expense(updated_by=user, debit=debit, amount=amount)
+        expense.save()
+
+        return Response(data={'Expense':'Added'},status=200)
 
     permission_classes = (IsAuthenticated,)
     parser_classes = (parsers.JSONParser,)
-    queryset = Expense.objects.all()
-    serializer_class = ExpenseSerializer
 
 
 class EventDateView(ListAPIView):
@@ -170,8 +192,6 @@ class UserDateView(ListAPIView):
 
 class DonationCountView(APIView):
 
-    permission_classes = (IsAdminUser,)
-
     def get(self, request):
         days = request.query_params['days']
         if int(days) == 0:
@@ -185,7 +205,7 @@ class DonationCountView(APIView):
 
 class UserCountView(APIView):
 
-    permission_classes = (IsAdminUser,)
+    permission_classes = (IsAuthenticated,)
 
     def get(self, request):
         days = request.query_params['days']
@@ -200,7 +220,7 @@ class UserCountView(APIView):
 
 class DonationView(APIView):
 
-    permission_classes = (IsAdminUser,)
+    permission_classes = (IsAuthenticated,)
 
     def get(self, request):
         date = datetime.datetime.today() - datetime.timedelta(days=30)
@@ -210,7 +230,6 @@ class DonationView(APIView):
 
 
 class EventCountView(APIView):
-    permission_classes = (IsAdminUser,)
 
     def get(self, request):
         days = request.query_params['days']
@@ -224,7 +243,6 @@ class EventCountView(APIView):
 
 
 class UpcomingEventCountView(APIView):
-    permission_classes = (IsAdminUser,)
 
     def get(self, request):
         days = request.query_params['days']
@@ -289,15 +307,21 @@ class GenericExpenseView(ListAPIView):
     serializer_class = ExpenseSerializer
 
 
-class AdminUserDetailsView(ListAPIView):
+class AdminUserDetailsView(APIView):
+
+    def get(self,request):
+        user_details = User.objects.filter(pk = request.user.id).values('first_name','is_staff','is_superuser')
+        return Response(data=user_details)
+    
+    '''
     def get_queryset(self):
         users = User.objects.filter(is_superuser=True)
         return users
+    '''
 
     permission_classes = (IsAuthenticated,)
     parser_classes = (parsers.JSONParser,)
-    serializer_class = AdminUserSerializer
-
+    
 
 class UsersFromPastWeekView(APIView):
 
@@ -331,6 +355,19 @@ class CreditDebitCurrentMonthView(APIView):
         content = {'credit': credit_amount, 'debit': debit_amount}
         return Response(content)
 
+class UpcomingEventsView(ListAPIView):
+
+    permission_classes = (IsAuthenticated,)
+    parser_classes = (parsers.JSONParser,)
+    serializer_class = EventSerializer
+
+    def get_queryset(self):
+        #queryset = Event.objects.all()
+        queryset = Event.objects.filter(event_begin_date__gte = datetime.date.today())
+        #queryset = Event.objects.filter(event_begin_date__gte = start_date)
+        return queryset
+    
+
 
 '''
 class PayPalPaymentsView(APIView):
@@ -343,3 +380,53 @@ class PayPalPaymentsView(APIView):
         payment_form = PayPalPaymentsForm(initial = payment_information)
         context = {'form' : payment_form}
 '''
+
+
+class GetExpenseDataAsCSVView(APIView):
+    def get(self, request):
+        data = Expense.objects.filter(
+            timestamp__gte=datetime.datetime.now() - datetime.timedelta(days=30)).values()
+        with open('expense.csv', 'wb') as csv_file:
+            write_csv(data, csv_file)
+        file = open('expense.csv', 'rb')
+        return HttpResponse(FileWrapper(file), content_type='text/csv')
+
+
+class GetDonationDataAsCSVView(APIView):
+    def get(self, request):
+        data = Donation.objects.filter(donated_on__gte=datetime.datetime.now(
+        ) - datetime.timedelta(days=30)).values('amount', 'remark', 'donated_on')
+        with open('donation.csv', 'wb') as csv_file:
+            write_csv(data, csv_file)
+        file = open('donation.csv', 'rb')
+        return HttpResponse(FileWrapper(file), content_type='text/csv')
+
+
+class AddMailingListView(APIView):
+    def post(self, request):
+        email = request.POST['email']
+        ml = MailingList(email_id=email)
+        ml.save()
+        return Response(data={'message': 'Added'}, status=status.HTTP_200_OK)
+
+
+class AddFormView(APIView):
+    def post(self, request):
+        file = request.FILES['file']
+        # formname = request.POST['formname']
+        filename = request.POST['filename']
+        coords = request.POST['pos']
+        form_metadata = FormMetaData(
+            form_name=filename,
+            created_by=request.user, form_image=file, field_cords=coords
+        )
+        form_metadata.save()
+        return Response(data={'Form': 'Added'}, status=status.HTTP_200_OK)
+
+
+class GetFormView(APIView):
+    def get(self, request):
+        form_name = request.get_queryset.get('formname')
+        FormMetaData.objects.all()
+
+        
