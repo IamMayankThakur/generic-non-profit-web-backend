@@ -362,7 +362,7 @@ class PayPalPaymentsView(APIView):
 '''
 
 
-class GetExpenseDataAsCSVView(ListAPIView):
+class GetExpenseDataAsCSVView(APIView):
     def get(self, request):
         data = Expense.objects.filter(
             timestamp__gte=datetime.datetime.now() - datetime.timedelta(days=30)).values()
@@ -372,7 +372,7 @@ class GetExpenseDataAsCSVView(ListAPIView):
         return HttpResponse(FileWrapper(file), content_type='text/csv')
 
 
-class GetDonationDataAsCSVView(ListAPIView):
+class GetDonationDataAsCSVView(APIView):
     def get(self, request):
         data = Donation.objects.filter(donated_on__gte=datetime.datetime.now(
         ) - datetime.timedelta(days=30)).values('amount', 'remark', 'donated_on')
@@ -382,7 +382,7 @@ class GetDonationDataAsCSVView(ListAPIView):
         return HttpResponse(FileWrapper(file), content_type='text/csv')
 
 
-class AddMailingListView(ListAPIView):
+class AddMailingListView(APIView):
     def post(self, request):
         email = request.POST['email']
         ml = MailingList(email_id=email)
@@ -390,7 +390,7 @@ class AddMailingListView(ListAPIView):
         return Response(data={'message': 'Added'}, status=status.HTTP_200_OK)
 
 
-class AddFormView(ListAPIView):
+class AddFormView(APIView):
     def post(self, request):
         file = request.FILES['file']
         # formname = request.POST['formname']
