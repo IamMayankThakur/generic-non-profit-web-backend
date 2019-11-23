@@ -14,12 +14,13 @@ from rest_framework import renderers
 from rest_framework import status
 from rest_framework import viewsets
 from django.contrib.auth.models import User
+import os
 from .models import UserProfile, Event, Expense, Donation, FormMetaData, FormResponse, FormMetaData
 from .serializers import UserProfileSerializer, EventSerializer, DonationSerializer, ExpenseSerializer, UserSerializer, FormMetaDataSerializer, FormResponseSerializer, AdminUserSerializer
 
 import datetime
 from djqscsv import render_to_csv_response
-from django.http import HttpResponse
+from django.http import HttpResponse, Http404
 from wsgiref.util import FileWrapper
 from djqscsv import write_csv
 
@@ -94,23 +95,23 @@ class EventView(RetrieveUpdateDestroyAPIView, CreateModelMixin):
 
 class CreateEventView(APIView):
 
-    def post(self,request):
+    def post(self, request):
         user = request.user
         name = request.data['name']
         description = request.data['description']
         event_begin = request.data['event_begin_date']
         event_end = request.data['event_end_date']
 
-        event = Event(name = name,description = description, event_begin_date = event_begin, event_end_date = event_end,event_created_by = user)
+        event = Event(name=name, description=description, event_begin_date=event_begin,
+                      event_end_date=event_end, event_created_by=user)
         event.save()
-        return Response(data = {'Event' : 'Added'})
+        return Response(data={'Event': 'Added'})
 
     permission_classes = (IsAuthenticated,)
     parser_classes = (parsers.JSONParser,)
-    
+
 
 class ExpenseView(RetrieveUpdateDestroyAPIView):
-    
 
     permission_classes = (IsAuthenticated,)
     parser_classes = (parsers.JSONParser,)
@@ -120,7 +121,7 @@ class ExpenseView(RetrieveUpdateDestroyAPIView):
 
 class CreateExpenseView(APIView):
 
-    def post(self,request):
+    def post(self, request):
         print(request.data)
         print(request.POST)
         user = request.user
@@ -130,7 +131,7 @@ class CreateExpenseView(APIView):
         expense = Expense(updated_by=user, debit=debit, amount=amount)
         expense.save()
 
-        return Response(data={'Expense':'Added'},status=200)
+        return Response(data={'Expense': 'Added'}, status=200)
 
     permission_classes = (IsAuthenticated,)
     parser_classes = (parsers.JSONParser,)
@@ -311,10 +312,11 @@ class GenericExpenseView(ListAPIView):
 
 class AdminUserDetailsView(APIView):
 
-    def get(self,request):
-        user_details = User.objects.filter(pk = request.user.id).values('first_name','is_staff','is_superuser')
+    def get(self, request):
+        user_details = User.objects.filter(pk=request.user.id).values(
+            'first_name', 'is_staff', 'is_superuser')
         return Response(data=user_details[0])
-    
+
     '''
     def get_queryset(self):
         users = User.objects.filter(is_superuser=True)
@@ -323,7 +325,7 @@ class AdminUserDetailsView(APIView):
 
     permission_classes = (IsAuthenticated,)
     parser_classes = (parsers.JSONParser,)
-    
+
 
 class UsersFromPastWeekView(APIView):
 
@@ -357,6 +359,7 @@ class CreditDebitCurrentMonthView(APIView):
         content = {'credit': credit_amount, 'debit': debit_amount}
         return Response(content)
 
+
 class UpcomingEventsView(ListAPIView):
 
     permission_classes = (IsAuthenticated,)
@@ -365,10 +368,10 @@ class UpcomingEventsView(ListAPIView):
 
     def get_queryset(self):
         #queryset = Event.objects.all()
-        queryset = Event.objects.filter(event_begin_date__gte = datetime.date.today())
+        queryset = Event.objects.filter(
+            event_begin_date__gte=datetime.date.today())
         #queryset = Event.objects.filter(event_begin_date__gte = start_date)
         return queryset
-    
 
 
 '''
@@ -415,11 +418,11 @@ class AddMailingListView(APIView):
 class AddFormView(APIView):
     def post(self, request):
         file = request.FILES['file']
-        # formname = request.POST['formname']
+        formname = request.POST['formname']
         filename = request.POST['filename']
         coords = request.POST['pos']
         form_metadata = FormMetaData(
-            form_name=filename,
+            form_name=formname,
             created_by=request.user, form_image=file, field_cords=coords
         )
         form_metadata.save()
@@ -428,7 +431,28 @@ class AddFormView(APIView):
 
 class GetFormView(APIView):
     def get(self, request):
-        form_name = request.get_queryset.get('formname')
-        FormMetaData.objects.all()
+        form_name = request.query_params.get('formname')
+        form = FormMetaData.objects.get(form_name=form_name)
+        formdata = FormMetaDataSerializer(form)
+        return Response(formdata.data, status=200)
 
-        
+
+class GetAllFormsView(APIView):
+    def get(self, request):
+        allforms = FormMetaData.objects.all().values('form_name')
+        # data = FormMetaDataSerializer(allforms)
+        return Response(allforms, status=200)
+
+
+class GetFormImageView(APIView):
+    def get(self, request):
+        filename = request.query_params.get('filename')
+        file_path = FormMetaData.objects.get(form_image=filename).form_image.path
+        if os.path.exists(file_path):
+            with open(file_path, 'rb') as fh:
+                response = HttpResponse(
+                    fh.read(), content_type="image/jpeg")
+                response['Content-Disposition'] = 'inline; filename=' + \
+                    os.path.basename(file_path)
+                return response
+        raise Http404
