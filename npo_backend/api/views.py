@@ -99,7 +99,7 @@ class CreateEventView(APIView):
         user = request.user
         name = request.data['name']
         description = request.data['description']
-        event_begin = request.data['event_begin_date']
+        event_begin = request.data['event_start_date']
         event_end = request.data['event_end_date']
 
         event = Event(name=name, description=description, event_begin_date=event_begin,
@@ -418,13 +418,8 @@ class AddMailingListView(APIView):
 class AddFormView(APIView):
     def post(self, request):
         file = request.FILES['file']
-<<<<<<< HEAD
-        # formname = request.POST['formname']
-        formname = request.POST['formname']
-=======
         formname = request.POST['formname']
         filename = request.POST['filename']
->>>>>>> staging
         coords = request.POST['pos']
         form_metadata = FormMetaData(
             form_name=formname,
@@ -436,9 +431,11 @@ class AddFormView(APIView):
 
 class GetFormView(APIView):
     def get(self, request):
+        print("here")
         form_name = request.query_params.get('formname')
         form = FormMetaData.objects.get(form_name=form_name)
         formdata = FormMetaDataSerializer(form)
+        print(formdata)
         return Response(formdata.data, status=200)
 
 
