@@ -48,6 +48,8 @@ urlpatterns = [
     path('add_mailing_list/', views.AddMailingListView.as_view(), name='add user to mailing list'),
     path('add_form/', views.AddFormView.as_view(), name='add Form to database'),
     path('get_form/', views.GetFormView.as_view(), name='Get Form from database'),
+    path('get_all_forms/', views.GetAllFormsView.as_view(), name='Get All Forms from database'),
+    path('get_form_image/', views.GetFormImageView.as_view(), name='Get Image for the given file'),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)
