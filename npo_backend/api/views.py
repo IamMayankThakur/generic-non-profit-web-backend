@@ -414,10 +414,10 @@ class AddFormView(APIView):
     def post(self, request):
         file = request.FILES['file']
         # formname = request.POST['formname']
-        filename = request.POST['filename']
+        formname = request.POST['formname']
         coords = request.POST['pos']
         form_metadata = FormMetaData(
-            form_name=filename,
+            form_name=formname,
             created_by=request.user, form_image=file, field_cords=coords
         )
         form_metadata.save()
