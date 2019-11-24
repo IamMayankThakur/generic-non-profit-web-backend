@@ -281,6 +281,7 @@ class FillFormView(APIView):
         user = request.user
         data = request.data['data']
         fr = FormResponse(form=form, response=data, filled_by=user)
+        fr.save()
         return Response(data={'Form':'Submitted'}, status=201)
 
 
