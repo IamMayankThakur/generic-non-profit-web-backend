@@ -272,12 +272,16 @@ class RegisteredForEventView(ListAPIView):
     serializer_class = UserSerializer
 
 
-class FillFormView(ListCreateAPIView):
+class FillFormView(APIView):
 
-    queryset = FormResponse.objects.all()
     permission_classes = (IsAuthenticated,)
     parser_classes = (parsers.JSONParser,)
-    serializer_class = FormResponseSerializer
+    def post(self, request):
+        form = FormMetaData.objects.get(form_name=request.data['formname'])
+        user = request.user
+        data = request.data['data']
+        fr = FormResponse(form=form, response=data, filled_by=user)
+        return Response(data={'Form':'Submitted'}, status=201)
 
 
 class FormView(APIView):
