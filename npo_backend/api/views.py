@@ -465,10 +465,19 @@ class GetFormImageView(APIView):
         raise Http404
 
 
-class GetFilledFormsView(APIView):
+class GetFilledFormsNameView(APIView):
     permission_classes = (IsAuthenticated,)
 
     def get(self, request):
         data = FormResponse.objects.filter(
-            filled_by=request.user).values('form__form_name', 'response')
+            filled_by=request.user).values('form__form_name')
+        return Response(data=data, status=200)
+
+
+class GetFilledFormsDataView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request):
+        data = FormResponse.objects.filter(
+            filled_by=request.user, form__form_name=request.query_params.get('formname')).values('response')
         return Response(data=data, status=200)

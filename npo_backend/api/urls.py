@@ -50,7 +50,8 @@ urlpatterns = [
     path('get_form/', views.GetFormView.as_view(), name='Get Form from database'),
     path('get_all_forms/', views.GetAllFormsView.as_view(), name='Get All Forms from database'),
     path('get_form_image/', views.GetFormImageView.as_view(), name='Get Image for the given file'),
-    path('get_filled_forms/', views.GetFilledFormsView.as_view(), name='Get Filled Forms data for current user'),
+    path('get_filled_forms_name/', views.GetFilledFormsNameView.as_view(), name='Get Filled Forms name for current user'),
+    path('get_filled_forms_data/', views.GetFilledFormsDataView.as_view(), name='Get Filled Forms data for current user'),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)
