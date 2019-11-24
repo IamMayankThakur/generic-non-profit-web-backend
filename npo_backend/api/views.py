@@ -276,13 +276,14 @@ class FillFormView(APIView):
 
     permission_classes = (IsAuthenticated,)
     parser_classes = (parsers.JSONParser,)
+
     def post(self, request):
         form = FormMetaData.objects.get(form_name=request.data['formname'])
         user = request.user
         data = request.data['data']
         fr = FormResponse(form=form, response=data, filled_by=user)
         fr.save()
-        return Response(data={'Form':'Submitted'}, status=201)
+        return Response(data={'Form': 'Submitted'}, status=201)
 
 
 class FormView(APIView):
@@ -452,7 +453,8 @@ class GetAllFormsView(APIView):
 class GetFormImageView(APIView):
     def get(self, request):
         filename = request.query_params.get('filename')
-        file_path = FormMetaData.objects.get(form_image=filename).form_image.path
+        file_path = FormMetaData.objects.get(
+            form_image=filename).form_image.path
         if os.path.exists(file_path):
             with open(file_path, 'rb') as fh:
                 response = HttpResponse(
@@ -461,3 +463,12 @@ class GetFormImageView(APIView):
                     os.path.basename(file_path)
                 return response
         raise Http404
+
+
+class GetFilledFormsView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request):
+        data = FormResponse.objects.filter(
+            filled_by=request.user).values('form__form_name', 'response')
+        return Response(data=data, status=200)
